@@ -1,2 +1,4 @@
 config.py
 *.csv
+*.ipynb*
+__pycache__

@@ -31,7 +31,7 @@ params = {"screen_name":"nitkcdadon",
 res = twitter.get(url, params = params)
 count = 0
 all_count = 0
-max_id = str()
+max_id = ''
 
 if res.status_code == 200:
     timelines = json.loads(res.text)
@@ -64,47 +64,59 @@ for tl in timelines:
     max_id = tweet_id
 
 flag = 0
+print('now : ',str(len(df)))
 
-while flag == 0:
+while flag <= 1:
+    flag = 0
     time.sleep(5)
-    url = "https://api.twitter.com/1.1/favorites/list.json"
     params = {"screen_name":"nitkcdadon",
               "count":200,
-              'include_entities':'false'}
+              'include_entities':'true',
+              'max_id':str(max_id)}
+
+    res = twitter.get(url, params = params)
+
     if res.status_code == 200:
         timelines = json.loads(res.text)
-
-    for tl in timelines:
-        all_count += 1
-
-        tweet_id = tl["id_str"]
-    
-        if  len(df[df['tweet_id'] == tweet_id]) == 1:
-            flag = 1
-            continue
         
-    
-        text = tl["text"]
+        if len(timelines) == 1:
+            break
 
-        try:
-            urls = str(tl["entities"]["urls"])
-            if len(urls) == 0:
-                urls = "null"
-            if urls == "[]":
-                urls = "null"
-        except:
-            urls = "null"
-        user_name = tl['user']['name']
-        user_id = tl['user']['id_str']
-        favorite_count = tl["favorite_count"]
-        retweet_count = tl["retweet_count"]
-        tweet_url = 'https://twitter.com/' + tl['user']['screen_name'] + '/status/' + tl['id_str']
-        created_at = tl["created_at"]
-        count += 1
-        df_line = pd.DataFrame([[tweet_id,text,user_name,user_id,urls,favorite_count,retweet_count,tweet_url,created_at]],
-                       columns=col)
-        df = df.append(df_line, ignore_index=True)
-        max_id = tweet_id
+        for tl in timelines:
+            all_count += 1
+
+            tweet_id = tl["id_str"]
+
+            dupc = len(df[df['tweet_id'] == tweet_id]['tweet_id'].tolist())
+        
+            if  dupc >= 1:
+#                 print('all_count : ',all_count)
+#                 print(df[df['tweet_id'] == tweet_id]['tweet_id'].tolist())
+                flag = flag + 1
+            else:
+                text = tl["text"]
+
+                try:
+                    urls = str(tl["entities"]["urls"])
+                    if len(urls) == 0:
+                        urls = "null"
+                    if urls == "[]":
+                        urls = "null"
+                except:
+                    urls = "null"
+                user_name = tl['user']['name']
+                user_id = tl['user']['id_str']
+                favorite_count = tl["favorite_count"]
+                retweet_count = tl["retweet_count"]
+                tweet_url = 'https://twitter.com/' + tl['user']['screen_name'] + '/status/' + tl['id_str']
+                created_at = tl["created_at"]
+                count += 1
+                df_line = pd.DataFrame([[tweet_id,text,user_name,user_id,urls,favorite_count,retweet_count,tweet_url,created_at]],
+                            columns=col)
+                df = df.append(df_line, ignore_index=True)
+                max_id = tweet_id
+
+        print('loop now : ',str(len(df)))
 
 
 JST = timezone(timedelta(hours=+9), 'JST')

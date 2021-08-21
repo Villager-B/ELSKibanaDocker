@@ -37,6 +37,8 @@ mapping = {
     }
 }
 client = Elasticsearch("http://localhost:9200")
+
+# client.indices.delete('like_tweets')
 client.indices.create(index='like_tweets', body=mapping)
 
 def es_doc_generator(index,df):
