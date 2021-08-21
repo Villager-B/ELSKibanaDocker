@@ -4,7 +4,7 @@ ElasticSearch(+ Sudachi:full) + Kibanaの環境をDockerで立ち上げる．
 
 また，オプションとしてTwitterでいいねしたツイートをELSに投入するまでのコードも用意している．
 
-## Eenvironment
+## Environment
 
 - Elastic Search 7.10.1
 - Kibana 7.10.1
